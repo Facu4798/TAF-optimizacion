@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Submitted Assets</title>
+</head>
+<body>
+  <h1>Submitted Assets</h1>
+
+  <!-- Display budget and risk level -->
+  <section>
+    <p>Budget: {% if budget is not none %}{{ budget }}{% else %}Not provided{% endif %}</p>
+    <p>Risk level: {{ risk_level }}%</p>
+  </section>
+
+  {% if assets %}
+    <ul>
+      {% for a in assets %}
+        <li>{{ a }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No assets submitted.</p>
+  {% endif %}
+
+  <p><a href="{{ url_for('hello') }}">Back</a></p>
+</body>
+</html>

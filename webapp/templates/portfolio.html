@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Markowitz — Assets</title>
+  <style>
+    table { border-collapse: collapse; width: 50%; max-width: 600px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    input[type="text"] { width: 100%; box-sizing: border-box; padding: 6px; }
+    input[type="number"] { padding: 6px; width: 160px; }
+    select { padding: 6px; }
+    .controls { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
+    .controls label { font-weight: 600; margin-right: 6px; }
+    .add-btn, .submit-btn { padding: 6px 12px; margin-right: 6px; }
+  </style>
+</head>
+<body>
+  <h1>Portfolio — Assets</h1>
+
+  <p>Enter asset names/tickers. Click "Add row" to append a new asset field, then "Submit" to send the list.</p>
+
+  <form method="post" action="{{ url_for('resultado') }}">
+    <!-- Budget and risk-level controls -->
+    <div class="controls" role="group" aria-label="budget and risk controls">
+      <div>
+        <label for="budget">Budget</label><br/>
+        <input type="number" step="any" name="budget" id="budget" placeholder="e.g. 100000" />
+      </div>
+      <div>
+        <label for="risk_level_range">Risk level (%)</label><br/>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input type="range" name="risk_level" id="risk_level_range" min="0" max="100" value="50" />
+          <input type="number" id="risk_level_number" min="0" max="100" value="50" style="width:72px; padding:6px;" />
+        </div>
+        <small>0 = lowest risk, 100 = highest risk</small>
+      </div>
+    </div>
+
+    <table id="assets-table" aria-label="Assets table">
+      <thead>
+        <tr><th>Asset</th></tr>
+      </thead>
+      <tbody>
+        {# Render existing assets as editable rows #}
+        {% for a in assets %}
+        <tr class="asset-row">
+          <td><input type="text" name="asset" value="{{ a }}" /></td>
+        </tr>
+        {% endfor %}
+
+        {# If no assets provided, show one empty row #}
+        {% if assets|length == 0 %}
+        <tr class="asset-row">
+          <td><input type="text" name="asset" value="" /></td>
+        </tr>
+        {% endif %}
+
+        {# Last row contains the Add button and the Submit button #}
+        <tr id="add-row">
+          <td>
+            <button type="button" id="add-button" class="add-btn">Add row</button>
+            <button type="submit" id="submit-button" class="submit-btn">Submit</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+
+  <script>
+    (function(){
+      const tbody = document.getElementById('assets-table').getElementsByTagName('tbody')[0];
+      const addBtn = document.getElementById('add-button');
+      function createAssetRow(value='') {
+        const tr = document.createElement('tr');
+        tr.className = 'asset-row';
+        const td = document.createElement('td');
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.name = 'asset';
+        input.value = value;
+        td.appendChild(input);
+        tr.appendChild(td);
+        return tr;
+      }
+      addBtn.addEventListener('click', function(){
+        // Insert new row above the add-row
+        const addRow = document.getElementById('add-row');
+        const newRow = createAssetRow('');
+        tbody.insertBefore(newRow, addRow);
+        // focus the newly created input
+        newRow.querySelector('input').focus();
+      });
+
+      // sync range and number inputs for risk level
+      const range = document.getElementById('risk_level_range');
+      const number = document.getElementById('risk_level_number');
+      if (range && number) {
+        range.addEventListener('input', () => { number.value = range.value; });
+        number.addEventListener('input', () => {
+          let v = parseInt(number.value, 10);
+          if (isNaN(v)) v = 0;
+          v = Math.max(0, Math.min(100, v));
+          number.value = v;
+          range.value = v;
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

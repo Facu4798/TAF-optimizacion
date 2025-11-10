@@ -16,8 +16,8 @@ def VaR(ticker, p=0.95):
         os.system("pip install scipy")
         from scipy.stats import norm
 
-    # fetch 1 year of daily adjusted close prices, compute daily returns and VaR
-    data = yf.download(ticker, period="1y", progress=False)["Adj Close"].dropna()
+    # fetch all historical data for the ticker
+    data = yf.download(ticker, progress=False)
     if data.empty:
         raise ValueError(f"No historical data found for ticker: {ticker}")
     if not (0 < p < 1):
