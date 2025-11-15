@@ -3,39 +3,105 @@
 <head>
   <meta charset="utf-8" />
   <title>Markowitz — Assets</title>
+
+  <!--
+    Basic styles for the page.
+    - table: constrains width so it looks reasonable on desktop.
+    - inputs: padding + full width for nicer UX.
+    - .controls: layout for budget / risk controls.
+  -->
   <style>
+    /* Table layout and spacing */
     table { border-collapse: collapse; width: 50%; max-width: 600px; }
     th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+
+    /* Make text inputs use full cell width */
     input[type="text"] { width: 100%; box-sizing: border-box; padding: 6px; }
+
+    /* Numeric input style for budget */
     input[type="number"] { padding: 6px; width: 160px; }
+
+    /* Keep select styling (not used now but harmless) */
     select { padding: 6px; }
+
+    /* Controls container: places budget and risk next to each other */
     .controls { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
     .controls label { font-weight: 600; margin-right: 6px; }
+
+    /* Buttons styling */
     .add-btn, .submit-btn { padding: 6px 12px; margin-right: 6px; }
   </style>
 </head>
 <body>
   <h1>Portfolio — Assets</h1>
 
-  <p>Enter asset names/tickers. Click "Add row" to append a new asset field, then "Submit" to send the list.</p>
+  <p>
+    Enter asset names/tickers. Click "Add row" to append a new asset field, then "Submit" to send the list.
+    <!-- short UX guidance -->
+  </p>
 
+  <!--
+    The form posts to the Flask endpoint 'resultado'.
+    Important: input name attributes are what Flask's request.form uses.
+      - asset -> request.form.getlist('asset')
+      - budget -> request.form.get('budget')
+      - risk_level -> request.form.get('risk_level')
+  -->
   <form method="post" action="{{ url_for('resultado') }}">
     <!-- Budget and risk-level controls -->
     <div class="controls" role="group" aria-label="budget and risk controls">
       <div>
+        <!-- budget input: use type=number for numeric keyboard/validation -->
         <label for="budget">Budget</label><br/>
-        <input type="number" step="any" name="budget" id="budget" placeholder="e.g. 100000" />
+        <input
+          type="number"
+          step="any"
+          name="budget"          <!-- name="budget" is what backend reads -->
+          id="budget"
+          placeholder="e.g. 100000" />
       </div>
+
       <div>
+        <!--
+          Risk level represented as a percentage (0-100).
+          We keep two synced controls for convenience:
+            - range slider (id=risk_level_range, name=risk_level) -> this is submitted
+            - numeric input (id=risk_level_number) -> synced client-side for precision
+        -->
         <label for="risk_level_range">Risk level (%)</label><br/>
         <div style="display:flex; gap:8px; align-items:center;">
-          <input type="range" name="risk_level" id="risk_level_range" min="0" max="100" value="50" />
-          <input type="number" id="risk_level_number" min="0" max="100" value="50" style="width:72px; padding:6px;" />
+          <!--
+            The range element has name="risk_level" so its value is included in the form POST.
+            Default value is 50 (medium). The backend will parse and clamp to [0,100].
+          -->
+          <input
+            type="range"
+            name="risk_level"          <!-- important: this is submitted -->
+            id="risk_level_range"
+            min="0"
+            max="100"
+            value="50" />
+
+          <!-- Number field for typing an exact percentage; not submitted (no name) -->
+          <input
+            type="number"
+            id="risk_level_number"
+            min="0"
+            max="100"
+            value="50"
+            style="width:72px; padding:6px;" />
         </div>
         <small>0 = lowest risk, 100 = highest risk</small>
       </div>
     </div>
 
+    <!--
+      Assets table:
+      - Each asset input uses name="asset" so multiple inputs produce a list
+        available to Flask via request.form.getlist('asset').
+      - The last table row (#add-row) contains the Add and Submit buttons.
+      - New rows are inserted above the add-row by JavaScript.
+    -->
     <table id="assets-table" aria-label="Assets table">
       <thead>
         <tr><th>Asset</th></tr>
@@ -44,6 +110,7 @@
         {# Render existing assets as editable rows #}
         {% for a in assets %}
         <tr class="asset-row">
+          <!-- value="{{ a }}" pre-fills the field when template receives an assets list -->
           <td><input type="text" name="asset" value="{{ a }}" /></td>
         </tr>
         {% endfor %}
@@ -55,7 +122,11 @@
         </tr>
         {% endif %}
 
-        {# Last row contains the Add button and the Submit button #}
+        <!--
+          The special last row:
+          - "Add row" button is type="button" so it doesn't submit the form.
+          - "Submit" button is type="submit" and posts the whole form.
+        -->
         <tr id="add-row">
           <td>
             <button type="button" id="add-button" class="add-btn">Add row</button>
@@ -68,42 +139,83 @@
 
   <script>
     (function(){
+      /* Grab references to frequently used DOM elements */
       const tbody = document.getElementById('assets-table').getElementsByTagName('tbody')[0];
       const addBtn = document.getElementById('add-button');
+
+      /*
+        createAssetRow(value)
+        - Creates a new <tr> with a single <td> containing a text input.
+        - The input uses name="asset" so its value will be included in the POST.
+        - Returns the <tr> element so the caller can insert it into the table.
+      */
       function createAssetRow(value='') {
         const tr = document.createElement('tr');
         tr.className = 'asset-row';
+
         const td = document.createElement('td');
+
+        // Create the input field for the asset ticker/name
         const input = document.createElement('input');
         input.type = 'text';
-        input.name = 'asset';
+        input.name = 'asset';   // IMPORTANT: matches Flask processing
         input.value = value;
+
         td.appendChild(input);
         tr.appendChild(td);
         return tr;
       }
+
+      /* When the Add button is clicked, insert a new row above the last row (add-row) */
       addBtn.addEventListener('click', function(){
-        // Insert new row above the add-row
+        // find the last row placeholder we always keep
         const addRow = document.getElementById('add-row');
+
+        // create an empty asset row
         const newRow = createAssetRow('');
+
+        // insert the new row right before the add-row so the add button stays at the bottom
         tbody.insertBefore(newRow, addRow);
-        // focus the newly created input
+
+        // move keyboard focus into the newly created input so the user can type immediately
         newRow.querySelector('input').focus();
       });
 
-      // sync range and number inputs for risk level
-      const range = document.getElementById('risk_level_range');
-      const number = document.getElementById('risk_level_number');
+      /*
+        Syncing range and number inputs for risk level:
+        - The range element has name="risk_level" and will be submitted.
+        - The number input is only for convenience and is kept in sync.
+        - We clamp values to [0,100] on the number input to avoid invalid submissions.
+      */
+      const range = document.getElementById('risk_level_range');   // submitted value
+      const number = document.getElementById('risk_level_number'); // convenience input
+
       if (range && number) {
-        range.addEventListener('input', () => { number.value = range.value; });
+        // When the slider moves, update the numeric field immediately
+        range.addEventListener('input', () => {
+          number.value = range.value;
+        });
+
+        // When the numeric field changes, sanitize and reflect into the slider
         number.addEventListener('input', () => {
+          // parse integer; fallback to 0 if input is not a number
           let v = parseInt(number.value, 10);
           if (isNaN(v)) v = 0;
+
+          // clamp into the allowed range
           v = Math.max(0, Math.min(100, v));
+
+          // write back the clamped/validated value into both controls
           number.value = v;
           range.value = v;
         });
       }
+
+      /* Accessibility note:
+         - The table and controls include labels and aria attributes where helpful.
+         - Each dynamically added input uses a plain input field; if you need screen-reader labels
+           for each row, consider adding a visually-hidden label element per row or use aria-label on inputs.
+      */
     })();
   </script>
 </body>
