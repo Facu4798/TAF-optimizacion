@@ -30,7 +30,7 @@ def generate_report(budget, risk, expected_return, tickers, days):
     ).T
 
     # evironment
-    enviroment = pd.DataFrame({'VaR':VaRs,'RoI':RoIs})
+    enviroment = pd.DataFrame({'VaR':VaRs,'RoI':RoIs},index=tickers)
 
     # variables
     variables = pd.DataFrame(
