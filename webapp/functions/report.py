@@ -18,7 +18,7 @@ def generate_report(budget, risk, expected_return, tickers, days):
     varvals = {v.name: v.varValue for v in z.model.variables()}
 
     # print inputs
-    inputs =pd.DataFrame(
+    inputs = pd.DataFrame(
         {
             'Budget':"$"+str(budget),
             "Stocks":", ".join(tickers),
@@ -50,7 +50,7 @@ def generate_report(budget, risk, expected_return, tickers, days):
         ],
         index=["Dual Value","Slack","Value"]).T
 
-
+    # summary statistics of process
     stats = (pd.DataFrame(
         {
             "Risk": sum([varvals[f'stocks_{t}'] * VaRs[t] for t in tickers]),
