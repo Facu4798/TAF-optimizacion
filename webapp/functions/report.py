@@ -53,8 +53,6 @@ def generate_report(budget, risk, expected_return, tickers, days, diver):
 
 
     reccomendations = []
-    # ponderation
-
 
     # diversification analysis
     if constraints[constraints.index.str.startswith("Diversification_Link")]["Dual Value"].sum() > 0:
@@ -63,5 +61,12 @@ def generate_report(budget, risk, expected_return, tickers, days, diver):
         reccomendations.append("Diversification level is adequate.")
     else:
         reccomendations.append("Consider decreasing diversification to increase returns.")
+
+    # risk/return slack analysis
+    if stats.loc["Number of stocks","Value"] < len(tickers):
+        if vars.loc["s1","Value"] < 0:
+            reccomendations.append("You can increase the risk to potentially improve returns.")
+        if vars.loc["s2","Value"] < 0:
+            reccomendations.append("You can decrease the expected return to potentially reduce risk.")
 
     return z, inputs, envs, vars, constraints, stats, reccomendations
