@@ -47,6 +47,8 @@ def optimize(tickers,budget,VaRs,RoIs,mxr,exr,ponder=0.5,diver=0.5):
 
     # Solve
     model.solve()
+    # import os
+    # os.system("cls" if os.name == "nt" else "clear")
 
     class result:
         def __init__(self):

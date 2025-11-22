@@ -75,6 +75,7 @@ def optimize():
                              recommendations=recommendations)
     
     except Exception as e:
+        print(e)
         return render_template('index.html', error=f"Error: {str(e)}")
 
 if __name__ == '__main__':

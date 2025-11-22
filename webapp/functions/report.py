@@ -20,9 +20,7 @@ def generate_report(budget, risk, expected_return, tickers, days, diver):
 
     varvals = {v.name: v.varValue for v in z.model.variables()}
 
-    # print inputs
-    print("Inputs:")
-    print("#"*20)
+
     inputs =pd.DataFrame({
         'Budget':"$"+str(budget),
         "Stocks":", ".join(tickers),
@@ -31,22 +29,14 @@ def generate_report(budget, risk, expected_return, tickers, days, diver):
         "Days": days,
     },index=["Value"]).T
 
-    # evironment
-    print("\nEnvironment Parameters:\n"+"#"*20)
+
     envs =pd.DataFrame({'VaR':VaRs,'RoI':RoIs},index=tickers)
 
 
-
-    # variables
-    print("\nVaribles:\n"+"#"*20)
     vars =pd.DataFrame([{v.name:v.varValue for v in z.model.variables()},
                         {v.name:v.dj for v in z.model.variables()}],
                         index=["Value","Reduced cost"]).T.map(lambda x: round(x,4))
 
-
-
-    # constraints
-    print("\nConstraints:\n"+"#"*20)
     constraints = pd.DataFrame([{c.name:c.pi for c in z.model.constraints.values()},
                         {c.name:c.slack for c in z.model.constraints.values()},
                         {c.name:c.value() for c in z.model.constraints.values()}],
@@ -54,13 +44,12 @@ def generate_report(budget, risk, expected_return, tickers, days, diver):
 
 
 
-    print("\nEstadísticas de la solución:\n"+"#"*30)
     stats =(pd.DataFrame({
             "Risk": sum([varvals[f'stocks_{t}'] * VaRs[t] for t in tickers]),
             "Expected Return": sum([varvals[f'stocks_{t}'] * RoIs[t] for t in tickers]),
             "Pergcentage invested": z.ts.varValue**2/budget,
             "Number of stocks": sum([1 for t in tickers if varvals[f'stocks_{t}']> 0.0])*z.ts.varValue/100
-        },index=["Value"]).T/z.ts.varValue*100).map(lambda x: round(x,2))
+        },index=["Value"]).T/z.ts.varValue*100).map(lambda x: round(x,2)).fillna(0)
 
 
     reccomendations = []
