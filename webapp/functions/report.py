@@ -1,21 +1,30 @@
+import os
 import pandas as pd
 from functions.value_at_risk import VaR
 from functions.return_on_investment import RoI
 from functions.optimize import optimize
+from functions.get_series import get_series
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
-def generate_report(budget, risk, expected_return, tickers, days, diver):
-    
-    VaRs = {ticker: VaR(ticker) for ticker in tickers}
-    RoIs = {ticker: RoI(ticker, days=days) for ticker in tickers}
+def generate_report(budget, risk, expected_return, tickers, days, diver,ponder):
+    # get data
+    series = {ticker: get_series(ticker) for ticker in tickers}
 
+    # calculate VaR and RoI for each ticker
+    VaRs = {ticker: VaR(series[ticker]) for ticker in tickers}
+    RoIs = {ticker: RoI(series[ticker], days=days) for ticker in tickers}
+
+    # optimize portfolio
     z = optimize(tickers = tickers,
                 budget=budget,
                 VaRs=VaRs,
                 RoIs=RoIs,
                 mxr=risk,
                 exr=expected_return,
-                diver =diver
+                diver =diver,
+                ponder = ponder
                 )
 
     varvals = {v.name: v.varValue for v in z.model.variables()}
@@ -55,7 +64,7 @@ def generate_report(budget, risk, expected_return, tickers, days, diver):
     reccomendations = []
 
     # diversification analysis
-    if constraints[constraints.index.str.startswith("Diversification_Link")]["Dual Value"].sum() > 0:
+    if constraints[constraints.index.str.startswith("Diversification_Link")]["Dual Value"].sum() > 0 and diver < 1:
         reccomendations.append("Consider increasing diversification to reduce risk.")
     elif constraints[constraints.index.str.startswith("Diversification_Link")]["Dual Value"].sum() == 0:
         reccomendations.append("Diversification level is adequate.")
@@ -68,5 +77,22 @@ def generate_report(budget, risk, expected_return, tickers, days, diver):
             reccomendations.append("You can increase the risk to potentially improve returns.")
         if vars.loc["s2","Value"] < 0:
             reccomendations.append("You can decrease the expected return to potentially reduce risk.")
+    
+    #make graph
+    try:
+        import os
+        os.makedirs('webapp/static/graphs/', exist_ok=True)
+        for imgage in os.listdir('webapp/static/graphs/'):
+            os.remove(os.path.join('webapp/static/graphs/', imgage))
+        plt.figure(figsize=(30,10))
+        for t in tickers:
+            sns.lineplot( x=series[t].index, y=series[t]['Close'][t], label=t)
+        plt.legend()
+        
+        plt.savefig('webapp/static/graphs/report.png')
+        plt.clf()
+
+    except Exception as e:
+        print(f"Error generating graph: {e}")
 
     return z, inputs, envs, vars, constraints, stats, reccomendations

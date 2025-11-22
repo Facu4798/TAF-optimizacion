@@ -22,7 +22,7 @@ def optimize(tickers,budget,VaRs,RoIs,mxr,exr,ponder=0.5,diver=0.5):
 
     # Objective function: maximize return minus penalties
     model += (
-        lpSum([stocks[t] * RoIs[t] for t in tickers]) - s1 - s2,
+        lpSum([stocks[t] * RoIs[t] for t in tickers]) - ponder*s1 - (1 - ponder)*s2,
         "Total_Return_Minus_Penalties"
     )
 

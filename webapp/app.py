@@ -16,6 +16,7 @@ def optimize():
         risk = float(request.form.get('risk'))
         expected_return = float(request.form.get('return'))
         diversification = float(request.form.get('diversification'))
+        ponder = float(request.form.get('ponder')) / 100
         
         # Get tickers (dynamic fields)
         tickers = []
@@ -43,7 +44,8 @@ def optimize():
             expected_return=expected_return,
             tickers=tickers,
             days=days,
-            diver=diver
+            diver=diver,
+            ponder = ponder
         )
         
         # Extract investment amounts
@@ -72,7 +74,8 @@ def optimize():
                              actual_return=actual_return,
                              percentage_invested=percentage_invested,
                              num_stocks=num_stocks,
-                             recommendations=recommendations)
+                             recommendations=recommendations,
+                             ponder=ponder)
     
     except Exception as e:
         print(e)

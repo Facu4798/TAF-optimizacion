@@ -33,6 +33,10 @@
                     <span class="label">Stocks Considered:</span>
                     <span class="value">{{ tickers|join(', ') }}</span>
                 </div>
+                <div class="info-item">
+                    <span class="label">Risk-Return Ponderation:</span>
+                    <span class="value">{{ "%.2f"|format(ponder * 100) }}%</span>
+                </div>
             </div>
         </div>
         
@@ -100,6 +104,14 @@
             </ul>
         </div>
         
+        <div class="results-section">
+            <h2>Portfolio Performance Over Time</h2>
+            <div class="graph-container">
+                <img src="{{ url_for('static', filename='graphs/report.png') }}" alt="Portfolio Performance Graph">
+            </div>
+        </div>
+
+
         <div class="actions">
             <a href="/" class="btn-primary">New Optimization</a>
         </div>
