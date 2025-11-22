@@ -1,5 +1,5 @@
 from pulp import *
-def optimize2(tickers,budget,VaRs,RoIs,mxr,exr,ponder=0.5):
+def optimize(tickers,budget,VaRs,RoIs,mxr,exr,ponder=0.5,diver=0.5):
     
     if mxr >= 1:
         mxr = mxr / 100
@@ -15,15 +15,17 @@ def optimize2(tickers,budget,VaRs,RoIs,mxr,exr,ponder=0.5):
 
     # Decision variables
     stocks = {t: LpVariable(f"stocks_{t}", lowBound=0) for t in tickers}
-    s1 = LpVariable("s1", lowBound=0)  # risk slack
-    s2 = LpVariable("s2", lowBound=0)  # return slack
+    s1 = LpVariable("s1")  # risk slack
+    s2 = LpVariable("s2")  # return slack
     ts = LpVariable("ts", lowBound=0)  # total spent
+    d = {t: LpVariable(f"d_{t}", lowBound=0, upBound=1,cat=LpBinary) for t in tickers}  # diversification binaries
 
     # Objective function: maximize return minus penalties
     model += (
-        lpSum([stocks[t] * RoIs[t] for t in tickers]) - M1 * s1 - M2 * s2,
+        lpSum([stocks[t] * RoIs[t] for t in tickers]) - s1 - s2,
         "Total_Return_Minus_Penalties"
     )
+
 
     # Constraints
     # Budget constraint
@@ -33,16 +35,18 @@ def optimize2(tickers,budget,VaRs,RoIs,mxr,exr,ponder=0.5):
     model += lpSum([stocks[t] for t in tickers]) == ts, "Total_Spent"
 
     # Risk constraint (with slack)
-    model += lpSum([stocks[t] * VaRs[t] for t in tickers]) <= ts * mxr + s1, "Risk_Constraint"
+    model += lpSum([stocks[t] * VaRs[t] for t in tickers]) == ts * mxr + s1, "Risk_Constraint"
 
     # Return constraint (with slack)
-    model += lpSum([stocks[t] * RoIs[t] for t in tickers]) >= ts * exr - s2, "Return_Constraint"
+    model += lpSum([stocks[t] * RoIs[t] for t in tickers]) == ts * exr - s2, "Return_Constraint"
+
+    # Diversification constraint
+    model += lpSum([d[t] for t in tickers]) <= diver * len(tickers), "Diversification_Constraint"
+    for t in tickers:
+        model += stocks[t] <= d[t] * budget, f"Diversification_Link_{t}"
 
     # Solve
     model.solve()
-    
-    import os
-    os.system("cls" if os.name == "nt" else "clear")
 
     class result:
         def __init__(self):
@@ -51,3 +55,4 @@ def optimize2(tickers,budget,VaRs,RoIs,mxr,exr,ponder=0.5):
     r = result(); r.model = model; r.stocks = stocks; r.s1 = s1; r.s2 = s2; r.ts = ts
 
     return r
+

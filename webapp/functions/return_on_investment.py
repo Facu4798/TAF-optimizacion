@@ -3,7 +3,6 @@ from scipy.stats import norm
 
 def RoI(ticker, p=0.95,days=365):
     
-
     # fetch all historical data for the ticker
     data = yf.download(ticker,start="1900-01-01" ,progress=False,auto_adjust=False)
     if data.empty:

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Optimization</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Portfolio Optimization Tool</h1>
+        
+        {% if error %}
+        <div class="error-message">
+            {{ error }}
+        </div>
+        {% endif %}
+        
+        <form method="POST" action="/optimize" id="optimizationForm">
+            <div class="form-section">
+                <h2>Investment Parameters</h2>
+                
+                <div class="form-group">
+                    <label for="budget">Budget ($):</label>
+                    <input type="number" id="budget" name="budget" step="0.01" min="0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="risk">Maximum Risk (0-100%):</label>
+                    <input type="number" id="risk" name="risk" step="0.01" min="0" max="100" required>
+                    <small>Target risk level as a percentage</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="return">Expected Return (0-∞%):</label>
+                    <input type="number" id="return" name="return" step="0.01" min="0" required>
+                    <small>Target return as a percentage</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="diversification">Diversification Level (0-100%):</label>
+                    <input type="number" id="diversification" name="diversification" step="0.01" min="0" max="100" required>
+                    <small>Higher values allow more stocks in portfolio</small>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2>Stock Tickers</h2>
+                <div id="tickersContainer">
+                    <div class="ticker-group">
+                        <label for="ticker_0">Ticker 1:</label>
+                        <input type="text" id="ticker_0" name="ticker_0" placeholder="AAPL" required>
+                    </div>
+                </div>
+                
+                <button type="button" class="btn-secondary" onclick="addTicker()">+ Add Ticker</button>
+            </div>
+            
+            <button type="submit" class="btn-primary">Optimize Portfolio</button>
+        </form>
+    </div>
+    
+    <script>
+        let tickerCount = 1;
+        
+        function addTicker() {
+            const container = document.getElementById('tickersContainer');
+            const tickerGroup = document.createElement('div');
+            tickerGroup.className = 'ticker-group';
+            tickerGroup.id = `ticker-group-${tickerCount}`;
+            
+            tickerGroup.innerHTML = `
+                <label for="ticker_${tickerCount}">Ticker ${tickerCount + 1}:</label>
+                <input type="text" id="ticker_${tickerCount}" name="ticker_${tickerCount}" placeholder="AAPL">
+                <button type="button" class="btn-remove" onclick="removeTicker(${tickerCount})">Remove</button>
+            `;
+            
+            container.appendChild(tickerGroup);
+            tickerCount++;
+        }
+        
+        function removeTicker(id) {
+            const tickerGroup = document.getElementById(`ticker-group-${id}`);
+            if (tickerGroup) {
+                tickerGroup.remove();
+            }
+        }
+    </script>
+</body>
+</html>

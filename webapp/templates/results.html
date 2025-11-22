@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimization Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Portfolio Optimization Results</h1>
+        
+        <div class="results-section">
+            <h2>Input Parameters</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="label">Budget:</span>
+                    <span class="value">${{ "%.2f"|format(budget) }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Target Risk:</span>
+                    <span class="value">{{ "%.2f"|format(risk) }}%</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Target Return:</span>
+                    <span class="value">{{ "%.2f"|format(expected_return) }}%</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Diversification:</span>
+                    <span class="value">{{ "%.2f"|format(diversification) }}%</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Stocks Considered:</span>
+                    <span class="value">{{ tickers|join(', ') }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="results-section">
+            <h2>Recommended Investment Allocation</h2>
+            {% if investments %}
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Ticker</th>
+                        <th>Investment Amount ($)</th>
+                        <th>Percentage of Budget</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ticker, amount in investments.items() %}
+                    <tr>
+                        <td><strong>{{ ticker }}</strong></td>
+                        <td>${{ "%.2f"|format(amount) }}</td>
+                        <td>{{ "%.2f"|format((amount / budget) * 100) }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td><strong>Total Invested:</strong></td>
+                        <td><strong>${{ "%.2f"|format(investments.values()|sum) }}</strong></td>
+                        <td><strong>{{ "%.2f"|format(percentage_invested) }}%</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+            {% else %}
+            <p class="no-results">No investment allocation found. Try adjusting your parameters.</p>
+            {% endif %}
+        </div>
+        
+        <div class="results-section">
+            <h2>Portfolio Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Expected Risk</h3>
+                    <p class="stat-value">{{ "%.2f"|format(actual_risk) }}%</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Expected Return</h3>
+                    <p class="stat-value">{{ "%.2f"|format(actual_return) }}%</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Budget Utilized</h3>
+                    <p class="stat-value">{{ "%.2f"|format(percentage_invested) }}%</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Number of Stocks</h3>
+                    <p class="stat-value">{{ num_stocks }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="results-section">
+            <h2>Recommendations</h2>
+            <ul class="recommendations-list">
+                {% for recommendation in recommendations %}
+                <li>{{ recommendation }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        <div class="actions">
+            <a href="/" class="btn-primary">New Optimization</a>
+        </div>
+    </div>
+</body>
+</html>
