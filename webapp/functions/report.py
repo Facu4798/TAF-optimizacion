@@ -57,26 +57,29 @@ def generate_report(budget, risk, expected_return, tickers, days, diver,ponder):
             "Risk": sum([varvals[f'stocks_{t}'] * VaRs[t] for t in tickers]),
             "Expected Return": sum([varvals[f'stocks_{t}'] * RoIs[t] for t in tickers]),
             "Pergcentage invested": z.ts.varValue**2/budget,
-            "Number of stocks": sum([1 for t in tickers if varvals[f'stocks_{t}']> 0.0])*z.ts.varValue/100
+            "Number of stocks": sum([1 for t in tickers if varvals[f'stocks_{t}']> 0.1])*z.ts.varValue/100
         },index=["Value"]).T/z.ts.varValue*100).map(lambda x: round(x,2)).fillna(0)
 
 
     reccomendations = []
 
     # diversification analysis
-    if constraints[constraints.index.str.startswith("Diversification_Link")]["Dual Value"].sum() > 0 and diver < 1:
+    if (constraints[constraints.index.str.startswith("Diversification_Link")]["Dual Value"].sum() > 0) and (diver < 1):
         reccomendations.append("Consider increasing diversification to reduce risk.")
     elif constraints[constraints.index.str.startswith("Diversification_Link")]["Dual Value"].sum() == 0:
         reccomendations.append("Diversification level is adequate.")
     else:
-        reccomendations.append("Consider decreasing diversification to increase returns.")
+        if stats.loc["Number of stocks","Value"] > 1:
+            reccomendations.append("Consider decreasing diversification to increase returns.")
 
     # risk/return slack analysis
     if stats.loc["Number of stocks","Value"] < len(tickers):
         if vars.loc["s1","Value"] < 0:
-            reccomendations.append("You can increase the risk to potentially improve returns.")
+            if stats.loc["Risk","Value"] < risk*0.8:
+                reccomendations.append("You can increase the risk to potentially improve returns.")
         if vars.loc["s2","Value"] < 0:
-            reccomendations.append("You can decrease the expected return to potentially reduce risk.")
+            if stats.loc["Expected Return","Value"] > expected_return*1.2:
+                reccomendations.append("You can decrease the expected return to potentially reduce risk.")
     
     #make graph
     try:

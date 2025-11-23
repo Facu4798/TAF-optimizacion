@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio Optimization</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='icons/increase.png')}}">
 </head>
 <body>
     <div class="container">
@@ -47,6 +48,12 @@
                     <label for="ponder"></label>Risk-Return Ponderation (0-100%):</label>
                     <input type="number" id="ponder" name="ponder" step="0.01" min="0" max="100" required>
                     <small>Higher values give more weight to risk in the optimization</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="days">Investment period (days):</label>
+                    <input type="number" id="days" name="days" step="1" min="1" value="260" required>
+                    <small>Number of days to keep the Investments</small>
                 </div>
             </div>
             

@@ -6,9 +6,7 @@ def optimize(tickers,budget,VaRs,RoIs,mxr,exr,ponder=0.5,diver=0.5):
     if exr >= 1:
         exr = exr / 100
 
-    # Penalty weights
-    M1 = budget * ponder  # risk penalty
-    M2 = budget * (1 - ponder)  # return penalty
+    
 
     # Create the model
     model = LpProblem("Portfolio_Optimization", LpMaximize)
@@ -20,9 +18,13 @@ def optimize(tickers,budget,VaRs,RoIs,mxr,exr,ponder=0.5,diver=0.5):
     ts = LpVariable("ts", lowBound=0)  # total spent
     d = {t: LpVariable(f"d_{t}", lowBound=0, upBound=1,cat=LpBinary) for t in tickers}  # diversification binaries
 
+    # Penalty weights
+    M1 = budget * ponder  # risk penalty
+    M2 = budget * (1 - ponder)  # return penalty
+
     # Objective function: maximize return minus penalties
     model += (
-        lpSum([stocks[t] * RoIs[t] for t in tickers]) - ponder*s1 - (1 - ponder)*s2,
+        lpSum([stocks[t] * (1+RoIs[t]) for t in tickers]) - M1 * s1 - M2 * s2,
         "Total_Return_Minus_Penalties"
     )
 

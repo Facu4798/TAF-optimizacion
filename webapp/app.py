@@ -17,6 +17,7 @@ def optimize():
         expected_return = float(request.form.get('return'))
         diversification = float(request.form.get('diversification'))
         ponder = float(request.form.get('ponder')) / 100
+        days = int(request.form.get('days', 260))  # Default to 260 trading days if not provided
         
         # Get tickers (dynamic fields)
         tickers = []
@@ -31,8 +32,7 @@ def optimize():
         if len(tickers) == 0:
             return render_template('index.html', error="Please add at least one ticker symbol")
         
-        # Default days parameter (you can make this configurable if needed)
-        days = 30
+       
         
         # Convert diversification from 0-100 to 0-1 range
         diver = diversification / 100
@@ -82,6 +82,6 @@ def optimize():
         return render_template('index.html', error=f"Error: {str(e)}")
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000)
 
 
