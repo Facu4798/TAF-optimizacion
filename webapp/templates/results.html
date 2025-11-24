@@ -8,8 +8,19 @@
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='icons/increase.png')}}">
 </head>
 <body>
+
+    
+
     <div class="container">
         <h1>Portfolio Optimization Results</h1>
+
+
+        <div class="results-section">
+            <h2>Historic portfolio performance</h2>
+            <div class="graph-container">
+                <img src="{{ url_for('static', filename='graphs/report.png') }}" alt="Portfolio Performance Graph">
+            </div>
+        </div>
         
         <div class="results-section">
             <h2>Input Parameters</h2>
@@ -36,7 +47,7 @@
                 </div>
                 <div class="info-item">
                     <span class="label">Risk-Return Ponderation:</span>
-                    <span class="value">{{ "%.2f"|format(ponder * 100) }}%</span>
+                    <span class="value">{{ "%.2f"|format(ponder) }}%</span>
                 </div>
             </div>
         </div>
@@ -78,19 +89,19 @@
             <h2>Portfolio Statistics</h2>
             <div class="stats-grid">
                 <div class="stat-card">
-                    <h3>Expected Risk</h3>
+                    <h3 style="color:white">Expected Risk</h3>
                     <p class="stat-value">{{ "%.2f"|format(actual_risk) }}%</p>
                 </div>
                 <div class="stat-card">
-                    <h3>Expected Return</h3>
+                    <h3 style="color:white">Expected Return</h3>
                     <p class="stat-value">{{ "%.2f"|format(actual_return) }}%</p>
                 </div>
                 <div class="stat-card">
-                    <h3>Budget Utilized</h3>
+                    <h3 style="color:white">Budget Utilized</h3>
                     <p class="stat-value">{{ "%.2f"|format(percentage_invested) }}%</p>
                 </div>
                 <div class="stat-card">
-                    <h3>Number of Stocks</h3>
+                    <h3 style="color:white">Number of Stocks</h3>
                     <p class="stat-value">{{ num_stocks }}</p>
                 </div>
             </div>
@@ -105,12 +116,7 @@
             </ul>
         </div>
         
-        <div class="results-section">
-            <h2>Portfolio Performance Over Time</h2>
-            <div class="graph-container">
-                <img src="{{ url_for('static', filename='graphs/report.png') }}" alt="Portfolio Performance Graph">
-            </div>
-        </div>
+        
 
 
         <div class="actions">

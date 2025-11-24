@@ -15,8 +15,8 @@ def optimize():
         budget = float(request.form.get('budget'))
         risk = float(request.form.get('risk'))
         expected_return = float(request.form.get('return'))
-        diversification = float(request.form.get('diversification'))
-        ponder = float(request.form.get('ponder')) / 100
+        diver = float(request.form.get('diversification'))
+        ponder = float(request.form.get('ponder')) 
         days = int(request.form.get('days', 260))  # Default to 260 trading days if not provided
         
         # Get tickers (dynamic fields)
@@ -34,8 +34,7 @@ def optimize():
         
        
         
-        # Convert diversification from 0-100 to 0-1 range
-        diver = diversification / 100
+        
         
         # Call the generate_report function
         z, inputs, envs, vars_df, constraints, stats, recommendations = generate_report(
@@ -67,7 +66,7 @@ def optimize():
                              budget=budget,
                              risk=risk,
                              expected_return=expected_return,
-                             diversification=diversification,
+                             diversification=diver,
                              tickers=tickers,
                              investments=investments,
                              actual_risk=actual_risk,
@@ -82,6 +81,6 @@ def optimize():
         return render_template('index.html', error=f"Error: {str(e)}")
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(debug=True,host='0.0.0.0', port=5000)
 
 

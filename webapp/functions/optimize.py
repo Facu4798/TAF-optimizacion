@@ -1,20 +1,24 @@
 from pulp import *
 def optimize(tickers,budget,VaRs,RoIs,mxr,exr,ponder=0.5,diver=0.5):
-    
-    if mxr >= 1:
-        mxr = mxr / 100
-    if exr >= 1:
-        exr = exr / 100
+    # scale parameters 
+    diver = diver / 100
+    mxr = mxr /100
+    exr = exr / 100
+    ponder = ponder / 100
+    diver = diver / 100
 
-    
 
+
+    print(budget,VaRs,RoIs,mxr,exr,ponder,diver,sep ="\n",end="\n\n")
     # Create the model
     model = LpProblem("Portfolio_Optimization", LpMaximize)
 
     # Decision variables
     stocks = {t: LpVariable(f"stocks_{t}", lowBound=0) for t in tickers}
-    s1 = LpVariable("s1")  # risk slack
-    s2 = LpVariable("s2")  # return slack
+    s1 = LpVariable("s1",lowBound=0)  # risk slack
+    s2 = LpVariable("s2", lowBound=0)  # return slack
+    e1 = LpVariable("e1", lowBound=0)  # excess risk
+    e2 = LpVariable("e2", lowBound=0)  # excess return
     ts = LpVariable("ts", lowBound=0)  # total spent
     d = {t: LpVariable(f"d_{t}", lowBound=0, upBound=1,cat=LpBinary) for t in tickers}  # diversification binaries
 
@@ -22,10 +26,13 @@ def optimize(tickers,budget,VaRs,RoIs,mxr,exr,ponder=0.5,diver=0.5):
     M1 = budget * ponder  # risk penalty
     M2 = budget * (1 - ponder)  # return penalty
 
-    # Objective function: maximize return minus penalties
+
     model += (
-        lpSum([stocks[t] * (1+RoIs[t]) for t in tickers]) - M1 * s1 - M2 * s2,
-        "Total_Return_Minus_Penalties"
+        lpSum([stocks[t] * RoIs[t] for t in tickers])  
+        - lpSum([stocks[t] * VaRs[t] for t in tickers])
+        - budget * s1 
+        - budget * s2
+        ,"Total_Return_Minus_Penalties"
     )
 
 
@@ -37,20 +44,18 @@ def optimize(tickers,budget,VaRs,RoIs,mxr,exr,ponder=0.5,diver=0.5):
     model += lpSum([stocks[t] for t in tickers]) == ts, "Total_Spent"
 
     # Risk constraint (with slack)
-    model += lpSum([stocks[t] * VaRs[t] for t in tickers]) == ts * mxr + s1, "Risk_Constraint"
+    model += lpSum([stocks[t] * VaRs[t] for t in tickers]) - s1 + e1 == ts * mxr, "Risk_Constraint"
 
     # Return constraint (with slack)
-    model += lpSum([stocks[t] * RoIs[t] for t in tickers]) == ts * exr - s2, "Return_Constraint"
+    model += lpSum([stocks[t] * RoIs[t] for t in tickers]) + s2 - e2 == ts * exr, "Return_Constraint"
 
     # Diversification constraint
-    model += lpSum([d[t] for t in tickers]) <= diver * len(tickers), "Diversification_Constraint"
+    model += lpSum([d[t] for t in tickers]) >= diver * len(tickers), "Diversification_Constraint"
     for t in tickers:
         model += stocks[t] <= d[t] * budget, f"Diversification_Link_{t}"
 
     # Solve
     model.solve()
-    # import os
-    # os.system("cls" if os.name == "nt" else "clear")
 
     class result:
         def __init__(self):

@@ -4,6 +4,7 @@ from functions.value_at_risk import VaR
 from functions.return_on_investment import RoI
 from functions.optimize import optimize
 from functions.get_series import get_series
+from functions.graphing import make_graph
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -82,20 +83,34 @@ def generate_report(budget, risk, expected_return, tickers, days, diver,ponder):
                 reccomendations.append("You can decrease the expected return to potentially reduce risk.")
     
     #make graph
+    
     try:
-        import os
-        os.makedirs('webapp/static/graphs/', exist_ok=True)
-        for imgage in os.listdir('webapp/static/graphs/'):
-            os.remove(os.path.join('webapp/static/graphs/', imgage))
-        plt.figure(figsize=(30,10))
-        for t in tickers:
-            sns.lineplot( x=series[t].index, y=series[t]['Close'][t], label=t)
-        plt.legend()
-        
-        plt.savefig('webapp/static/graphs/report.png')
-        plt.clf()
-
+        make_graph(tickers,series)
     except Exception as e:
         print(f"Error generating graph: {e}")
 
+    # write report
+    for rep in os.listdir("webapp/reports/"):
+        os.remove(os.path.join("webapp/reports/", rep))
+    with open("webapp/reports/report.txt","w") as f:
+        f.write("Portfolio Optimization Report\n")
+        f.write("============================\n\n")
+        f.write("Inputs:\n"+"#"*20+"\n")
+        f.write(inputs.to_string())
+        f.write("\n\nEnvironmental Parameters:\n"+"#"*20+"\n")
+        f.write(envs.to_string())
+        f.write("\n\nDecision Variables:\n"+"#"*20+"\n")
+        f.write(vars.to_string())
+        f.write("\n\nConstraints:\n"+"#"*20+"\n")
+        f.write(constraints.to_string())
+        f.write("\n\nStatistics:\n"+"#"*20+"\n")
+        f.write(stats.to_string())
+        f.write("\n\nRecommendations:\n"+"#"*20+"\n")
+        for rec in reccomendations:
+            f.write(f"- {rec}\n")
+
+
+
+
     return z, inputs, envs, vars, constraints, stats, reccomendations
+
