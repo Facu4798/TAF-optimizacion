@@ -3,3 +3,4 @@ yfinance
 scipy
 pulp
 matplotlib
+seaborn
