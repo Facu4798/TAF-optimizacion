@@ -5,7 +5,7 @@ Inputs:
 ####################
                                    Value
 Budget                         $100000.0
-Stocks           GOOG, ^GSPC, MSFT, TSLA
+Stocks           MSFT, GOOG, TSLA, ^GSPC
 Risk (VaR)                          2.0%
 Expected Return                     5.0%
 Days                                 365
@@ -13,10 +13,10 @@ Days                                 365
 Environmental Parameters:
 ####################
             VaR       RoI
-GOOG   0.023306  0.189843
-^GSPC  0.011815  0.050575
 MSFT   0.029369  0.201748
+GOOG   0.023306  0.189843
 TSLA   0.046392  0.257798
+^GSPC  0.011815  0.050575
 
 Decision Variables:
 ####################
@@ -43,10 +43,10 @@ Total_Spent                  -0.222394 -0.000000e+00  0.000000e+00
 Risk_Constraint              11.119688 -0.000000e+00  3.384638e-06
 Return_Constraint            -0.000000  1.818989e-12  7.159368e-05
 Diversification_Constraint   -0.000000 -3.960000e+00  3.960000e+00
-Diversification_Link_GOOG    -0.000000  2.876826e+04 -2.876826e+04
-Diversification_Link_^GSPC   -0.000000  7.123174e+04 -7.123174e+04
 Diversification_Link_MSFT    -0.000000  1.000000e+05 -1.000000e+05
+Diversification_Link_GOOG    -0.000000  2.876826e+04 -2.876826e+04
 Diversification_Link_TSLA    -0.000000  1.000000e+05 -1.000000e+05
+Diversification_Link_^GSPC   -0.000000  7.123174e+04 -7.123174e+04
 
 Statistics:
 ####################
@@ -59,3 +59,4 @@ Number of stocks        2.00
 Recommendations:
 ####################
 - Diversification level is adequate.
+- You can decrease the maximum risk to improve safety.

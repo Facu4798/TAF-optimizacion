@@ -75,12 +75,10 @@ def generate_report(budget, risk, expected_return, tickers, days, diver,ponder):
 
     # risk/return slack analysis
     if stats.loc["Number of stocks","Value"] < len(tickers):
-        if vars.loc["s1","Value"] < 0:
-            if stats.loc["Risk","Value"] < risk*0.8:
-                reccomendations.append("You can increase the risk to potentially improve returns.")
-        if vars.loc["s2","Value"] < 0:
-            if stats.loc["Expected Return","Value"] > expected_return*1.2:
-                reccomendations.append("You can decrease the expected return to potentially reduce risk.")
+        if vars.loc["e1","Value"] > 0:
+            reccomendations.append("You can increase the return to potentially improve performance.")
+        if vars.loc["e2","Value"] > 0:
+                reccomendations.append("You can decrease the maximum risk to improve safety.")
     
     #make graph
     
