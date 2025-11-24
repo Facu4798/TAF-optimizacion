@@ -23,15 +23,15 @@ def optimize(tickers,budget,VaRs,RoIs,mxr,exr,ponder=0.5,diver=0.5):
     d = {t: LpVariable(f"d_{t}", lowBound=0, upBound=1,cat=LpBinary) for t in tickers}  # diversification binaries
 
     # Penalty weights
-    M1 = budget * ponder  # risk penalty
-    M2 = budget * (1 - ponder)  # return penalty
+    M1 =1* budget * ponder  # risk penalty
+    M2 = 1 * budget * (1 - ponder)  # return penalty
 
 
     model += (
         lpSum([stocks[t] * RoIs[t] for t in tickers])  
         - lpSum([stocks[t] * VaRs[t] for t in tickers])
-        - budget * s1 
-        - budget * s2
+        - M1 * s1 
+        - M2 * s2
         ,"Total_Return_Minus_Penalties"
     )
 
