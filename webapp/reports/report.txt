@@ -5,7 +5,7 @@ Inputs:
 ####################
                                    Value
 Budget                         $100000.0
-Stocks           MSFT, GOOG, TSLA, ^GSPC
+Stocks           MSFT, TSLA, GOOG, ^GSPC
 Risk (VaR)                          2.0%
 Expected Return                     5.0%
 Days                                 365
@@ -13,10 +13,10 @@ Days                                 365
 Environmental Parameters:
 ####################
             VaR       RoI
-MSFT   0.029369  0.201748
-GOOG   0.023306  0.189843
-TSLA   0.046392  0.257798
-^GSPC  0.011815  0.050575
+MSFT   0.029369  0.201737
+TSLA   0.046391  0.257889
+GOOG   0.023309  0.189890
+^GSPC  0.011815  0.050581
 
 Decision Variables:
 ####################
@@ -25,28 +25,28 @@ d_GOOG             1.0000        0.0000
 d_MSFT             1.0000        0.0000
 d_TSLA             1.0000        0.0000
 d_^GSPC            1.0000        0.0000
-e1                 0.0000      -11.1197
-e2              9977.7668        0.0000
-s1                 0.0000   -49988.8800
+e1                 0.0000      -11.1194
+e2              9978.2725        0.0000
+s1                 0.0000   -49988.8810
 s2                 0.0000   -50000.0000
-stocks_GOOG    71231.7370        0.0000
+stocks_GOOG    71209.8980        0.0000
 stocks_MSFT        0.0000       -0.0616
-stocks_TSLA        0.0000       -0.2118
-stocks_^GSPC   28768.2630        0.0000
+stocks_TSLA        0.0000       -0.2117
+stocks_^GSPC   28790.1020        0.0000
 ts            100000.0000        0.0000
 
 Constraints:
 ####################
-                            Dual Value         Slack         Value
-Max_Expenditure               0.129778 -0.000000e+00 -7.275958e-12
-Total_Spent                  -0.222394 -0.000000e+00  0.000000e+00
-Risk_Constraint              11.119688 -0.000000e+00  3.384638e-06
-Return_Constraint            -0.000000  1.818989e-12  7.159368e-05
-Diversification_Constraint   -0.000000 -3.960000e+00  3.960000e+00
-Diversification_Link_MSFT    -0.000000  1.000000e+05 -1.000000e+05
-Diversification_Link_GOOG    -0.000000  2.876826e+04 -2.876826e+04
-Diversification_Link_TSLA    -0.000000  1.000000e+05 -1.000000e+05
-Diversification_Link_^GSPC   -0.000000  7.123174e+04 -7.123174e+04
+                            Dual Value         Slack          Value
+Max_Expenditure               0.129783 -0.000000e+00       0.000000
+Total_Spent                  -0.222387 -0.000000e+00       0.000000
+Risk_Constraint              11.119373 -2.273737e-13      -0.000006
+Return_Constraint            -0.000000  9.094947e-13      -0.000030
+Diversification_Constraint   -0.000000 -3.960000e+00       3.960000
+Diversification_Link_MSFT    -0.000000  1.000000e+05 -100000.000000
+Diversification_Link_TSLA    -0.000000  1.000000e+05 -100000.000000
+Diversification_Link_GOOG    -0.000000  2.879010e+04  -28790.102000
+Diversification_Link_^GSPC   -0.000000  7.120990e+04  -71209.898000
 
 Statistics:
 ####################
