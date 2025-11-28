@@ -14,7 +14,7 @@ $B \geq 0$ presupuesto a invertir
 
 $tickers$ nombres simbolicos de las acciones (^GSPC = s&p 500, GOOG = google, TSLA = tesla,etc.)
 
-# entorno
+# Entorno
 
 $R^d = \frac{Close_{t+d} - Open_t}{Open_t}$ retorno a $d$ dias =  la variación porcentual entre el precio de apertura de un dia $t$ y el precio de cierre dentro de $d$ dias . osea $t+d$.
 
@@ -24,7 +24,7 @@ $VaR=p_{(1-p)}(R^d)$ percentil $1-p$ de la serie de retornos $R^d$ que son los r
 
 $E(R^d)=\frac{1}{N-d}\sum_{t=1}^{N-d}r^d_t$ retorno esperado del activo a $d$ dias. el retono esperado se calcula como el promedio de todos los retornos a $d$ dias de la serie. esto solo se puede hacer desde $t=1$ hasta el dia $N-d$ donde $N$ es la cantidad de retornos de la serie.
 
-# variables
+# Variables
 
 $\alpha_{ticker}$ variable binaria (0,1) que indica si se invierte en una acción o no. 
 
