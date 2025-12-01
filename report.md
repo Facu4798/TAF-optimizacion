@@ -19,47 +19,47 @@
 
 # Variables
 
-|              |      Value |   Reduced cost |
-|:-------------|-----------:|---------------:|
-| d_AAPL       |      1     |         0      |
-| d_AMZN       |      1     |         0      |
-| d_GOOG       |      1     |         0      |
-| d_MSFT       |      1     |         0      |
-| d_TSLA       |      1     |      3944.02   |
-| d_^GSPC      |      1     |         0      |
-| e1           |    361.303 |         0      |
-| e2           |  20815.9   |         0      |
-| s1           |      0     |   -100000      |
-| s2           |      0     |   -100000      |
-| stocks_AAPL  |      0     |        -0.1047 |
-| stocks_AMZN  |      0     |        -0.1698 |
-| stocks_GOOG  |      0     |        -0.0056 |
-| stocks_MSFT  |     -0     |         0      |
-| stocks_TSLA  | 100000     |        -0      |
-| stocks_^GSPC |      0     |        -0.1335 |
-| ts           | 100000     |         0      |
+|              |   Value |   Reduced cost |
+|:-------------|--------:|---------------:|
+| d_AAPL       |       0 |         0      |
+| d_AMZN       |       0 |        -0      |
+| d_GOOG       |       0 |         0      |
+| d_MSFT       |       0 |         0      |
+| d_TSLA       |       0 |        -0      |
+| d_^GSPC      |       0 |         0      |
+| e1           |       0 |        -0      |
+| e2           |       0 |         0.5    |
+| s1           |       0 |         0.5    |
+| s2           |       0 |        -0      |
+| stocks_AAPL  |       0 |        -0.0671 |
+| stocks_AMZN  |       0 |        -0.1035 |
+| stocks_GOOG  |       0 |        -0.011  |
+| stocks_MSFT  |       0 |        -0.0112 |
+| stocks_TSLA  |       0 |        -0      |
+| stocks_^GSPC |       0 |        -0.0692 |
+| ts           |       0 |        -0      |
 
 # Constraints
 
-|                            |   Dual Value |            Slack |             Value |
-|:---------------------------|-------------:|-----------------:|------------------:|
-| Max_Expenditure            |    0.172332  |     -0           |      -1.45519e-11 |
-| Total_Spent                |    0         |     -1.45519e-11 |      -1.45519e-11 |
-| Risk_Constraint            |    0         |     -9.09495e-13 |       3.04588e-06 |
-| Return_Constraint          |   -0         |     -9.09495e-13 |       7.85195e-05 |
-| Diversification_Constraint |   -0         |     -0           |       0           |
-| Diversification_Link_AAPL  |   -0         | 100000           | -100000           |
-| Diversification_Link_^GSPC |   -0         | 100000           | -100000           |
-| Diversification_Link_MSFT  |   -0         | 100000           | -100000           |
-| Diversification_Link_GOOG  |   -0         | 100000           | -100000           |
-| Diversification_Link_AMZN  |   -0         | 100000           | -100000           |
-| Diversification_Link_TSLA  |    0.0394402 |     -0           |       0           |
+|                            |   Dual Value |   Slack |   Value |
+|:---------------------------|-------------:|--------:|--------:|
+| Max_Expenditure            |     0.107693 |      -0 | -100000 |
+| Total_Spent                |    -0.025    |      -0 |       0 |
+| Risk_Constraint            |     1        |      -0 |       0 |
+| Return_Constraint          |    -0.5      |      -0 |       0 |
+| Diversification_Constraint |    -0        |      -0 |      -6 |
+| Diversification_Link_AAPL  |    -0        |  100000 |       0 |
+| Diversification_Link_^GSPC |    -0        |  100000 |       0 |
+| Diversification_Link_MSFT  |    -0        |  100000 |       0 |
+| Diversification_Link_GOOG  |    -0        |  100000 |       0 |
+| Diversification_Link_AMZN  |    -0        |  100000 |       0 |
+| Diversification_Link_TSLA  |    -0        |      -0 |       0 |
 
 # Solution Statistics
 
-|                      |    Value |
-|:---------------------|---------:|
-| Risk                 | 0.046387 |
-| Expected Return      | 0.258159 |
-| Pergcentage invested | 1        |
-| Number of stocks     | 1        |
+|                      |   Value |
+|:---------------------|--------:|
+| Risk                 |     nan |
+| Expected Return      |     nan |
+| Pergcentage invested |       0 |
+| Number of stocks     |       0 |
