@@ -15,14 +15,17 @@ Al contrario de una solución manual o heurística, el modelo de optimización p
 ### 3. Describa la naturaleza de los datos de entradas (inputs). ¿Cómo evitó el "hardcoding" y que formato de ingesta de datos utilizó (CSV, API, etc.)?
 
 La entrada del modelo se diseñó a travez de una interfaz web donde se introducen los parametros del modelo en campos de texto de un formulario.
+El usuario debe escribir los parametros en cada uno de los campos.
 
 ### 4. Explique el proceso de validación. ¿Cómo verificaron que la solución matemática fuese factible en la realidad operativa?
+Una de las maneras fue variar los parametros y verificar que el modelo varie la solucion como se espera.
+Otra de las maneras Dentro de los parametros se probaron combinaciones de parametros extremas para verificar el comportamiento del modelo cuando no existe solucion.
 
 ### 5. Enumere las 3 principales dificultades encontradas, ya sea en el modelado matemático o en la implementación del prototipo en Python.
 
-1. definición de la función objetivo: definir la función como $e_1 + e_2 + s_1 + s_2$ no daba los resultados esperados ya que 
+1. definición de la función objetivo: definir la función como $e_1 + e_2 + s_1 + s_2$ no daba los resultados esperados ya que esto producia que tdas las variables del modelo fuesen 0 debido a que cuando no se realizan inversiones el modelo determina que no hay exceso ni sobra de riesgo sobre el presupuesto establecido.
 2. Implementación de la interfaz web: al ser mi primer proyecto con Flask, tuve que aprender a manejar la librería y entender como conectar el modelo de optimización con la interfaz.
-3. Análisis de sensibilidad: interpretar los resultados del análisis de sensibilidad y entender como afectan a la solución del modelo no fue trivial al principio.
+3. Análisis de sensibilidad: interpretar los resultados del análisis de sensibilidad y entender como afectan a la solución del modelo no fue trivial al principio. Para hacer las recomendaciones fue de las tareas ams complejas.
 
 ## Elementos detallados del modelo y deployment
 
@@ -83,9 +86,14 @@ Vinculación diversificación-activo:
 $$\sum_{t \in T} X_t \leq \alpha \cdot B$$
 
 - **Manejo de Infactibilidad: ¿Cómo responde el modelo si no existe solución posible con los recursos dados?**
+Si no existe solucion que satisfaga los parametros y requisitos del usuario, el modelo optará por no realizar ninguna inversion.
 
 ### Analisis de sensibilidad y robustez:
 - **Análisis post-óptimo: Interpretación de precios sombra (duales) o análisis de rangos si aplica**
+Dentro del analisis post optimo se esbozaron recomendaciones al usuario basados en las restricciones que vinculan a las variables binarias $\alpha$ con las cantidades invertidas. Se determinó que si el dual value de estas restricciones era > 0 esto se debe a que es una accion conveniente de invertir pero el coeficiente de diversificacion la esta limitando a ser incluida en la solucion. Ante estos casos se recomienda incrementar el coeficiente de diversificacion. Caso contrario si el dual value es negativo significa que es una accion en la que no conviene invertir pero se esta incluyendo por lo cual se recomienda reducir el coeficiente de diversificacion.
+
+Adicionalemnte, si la holgura por exceso del retorno es mayor a 0 se recomienda disminuir el riesgo ya que probablemente se puede encontrar una solucion con un nivel de retorno todavia superior al especificado pero con un nivel de riesgo mayor. Del mismo modo, si la holgura por defecto del riesgo es mayor a 0 se recomienda aumentar el retorno ya que probablemente se pueda encontrar la solucion con un riesgo por debajo de lo especificado y con un retorno mayor a la solucion anterior.
+
 - **Escenarios: ¿Que parámetros clave variaron para probar la robustez?**
 
 Para este  caso, los valores que se variaron fueron principlamente los parametros de riesgo y retorno esperados, para observar como se comportaba la solución del modelo ante diferentes niveles de exigencia en estos aspectos. El presupuesto no tiene ningun tipo de impacto ya que solo determina volumnen de inversión y no la composición de la cartera. La cantidad de dias a los que se plantea la inversión puede tener un impacto mayor o menor dependiendo de los activos.
@@ -94,11 +102,13 @@ Para este  caso, los valores que se variaron fueron principlamente los parametro
 **Arquitectura del prototipo (deployment):**
 - **Stack tecnológico: librería de modelado utilizada (pyomo, pulp.+, or-tools) y solver seleccionado (CBC,gurobi,GLPK)**
 
-Para este caso se utilizó la librería PuLP junto con el solver CBC para resolver el modelo de programación lineal.
+Para este caso se utilizó la librería PuLP junto con el solver CBC MILP para resolver el modelo de programación lineal.
 
 - **Interfaz de usuario: Tipo de implementación (Streamlit, API, Notebook Interactivo)**
 
-Como interfaz de usuario se implementó una aplicación web utilizando Flask, donde se pueden ingresar los parámetros del modelo a través de un formulario, y luego se muestra la solución obtenida, los niveles de inversión en cada activo y los valores de riesgo y retorno esperados, además de recomendaciones para el usuario basadas en el análisis de sensibilidad.
+Como interfaz de usuario se implementó una aplicación web utilizando Flask, donde se pueden ingresar los parámetros del modelo a través de un formulario, y luego se muestra la solución obtenida, los niveles de inversión en cada activo y los valores de riesgo y retorno esperados, además de recomendaciones para el usuario basadas en el análisis de sensibilidad. 
+
+Adicionalmente, se muestra un grafico mostrando el rendimiento historico de cada uno de los activos de la cartera seleccionada.
 
 - **Flujo de la solución: Input $\rightarrow$ Solver $\rightarrow$ Output accionable que les correspondería** 
 
